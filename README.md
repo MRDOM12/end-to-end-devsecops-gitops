@@ -1,31 +1,91 @@
-﻿# End-to-End DevSecOps & GitOps Pipeline (5 Django Applications)
+# End-to-End DevSecOps & GitOps Pipeline
 
-An automated, security-first CI/CD and GitOps deployment architecture built for five Python/Django web applications (\mediplus\, \illa\, \	akecare\, \complaintbox\, and \project4\).
+An end-to-end DevSecOps learning project implementing security scanning, CI/CD automation, containerization, and GitOps deployment for five Python/Django applications.
 
-## Architecture & Pipeline Flow
-\\\
-Git Push (Gitea / GitHub)
-   │
-   ▼
-Jenkins CI/CD Pipeline
-   ├── 1. SAST (Semgrep: p/python, p/django)
-   ├── 2. SCA & Secret Scan (Trivy: vuln, secret)
-   └── 3. Container Build & Push (Docker -> Docker Hub)
-   │
-   ▼
-DAST Verification (OWASP ZAP Baseline Scan)
-   │
-   ▼
-GitOps Continuous Delivery (ArgoCD -> Kubernetes / Minikube)
-\\\
+## Applications
 
-## Tech Stack
-* **Applications:** Python 3.12, Django 4.2, Gunicorn, WhiteNoise, Bootstrap
-* **Security Gates:** Semgrep (SAST), Trivy (Dependency & Secret Scanning), OWASP ZAP (DAST)
-* **CI/CD & Source Control:** Jenkins Declarative Pipelines, Gitea, GitHub
-* **Containers & Orchestration:** Docker, Docker Hub, Kubernetes (Minikube), ArgoCD
+This repository contains five Django applications:
+
+- Mediplus
+- Project4
+- Complaintbox
+- Takecare
+- Villa
+
+Each application has its own Docker configuration, Jenkins pipeline, and Kubernetes manifests.
+
+## Architecture
+
+```text
+             Developer
+                 |
+                 v
+          Source Code Push
+            (Gitea / GitHub)
+                 |
+                 v
+          Jenkins CI Pipeline
+                 |
+       +---------+----------+
+       |         |          |
+       v         v          v
+    Semgrep    Trivy     Build Docker
+     SAST    SCA/Secrets    Image
+                            |
+                            v
+                       Docker Hub
+                            |
+                            v
+                    Kubernetes / Minikube
+                            |
+                            v
+                     Argo CD GitOps
+                            |
+                            v
+                      Application
+```
+
+OWASP ZAP is used separately for Dynamic Application Security Testing (DAST) against running applications.
+
+## Technology Stack
+
+| Category | Tools |
+|---|---|
+| Applications | Python, Django, HTML, CSS, JavaScript, Bootstrap |
+| Source control | Git, Gitea, GitHub |
+| CI/CD | Jenkins |
+| SAST | Semgrep |
+| Dependency and secret scanning | Trivy |
+| DAST | OWASP ZAP |
+| Containerization | Docker |
+| Container registry | Docker Hub |
+| Orchestration | Kubernetes, Minikube |
+| GitOps | Argo CD |
 
 ## Repository Structure
-* \mediplus/\, \illa/\, \	akecare/\, \complaintbox/\, \project4/\ — Containerized Django applications with \Dockerfile\, \Jenkinsfile\, and \k8s/\ manifests (\Deployment\ & \Service\).
-* \evidence/\ — Raw SAST, SCA, and DAST scan reports across all 5 applications.
-* \screenshots/\ — Verification evidence covering SAST, Dependency Scan, DAST, Jenkins Pipeline Setup, Green Stage Execution, and ArgoCD \Healthy & Synced\ deployments.
+
+```text
+EndToEnd-DevSecOps/
+│
+├── mediplus/
+├── project4/
+├── complaintbox/
+├── takecare/
+├── villa/
+│
+├── evidence/
+│   ├── mediplus/
+│   ├── project4/
+│   ├── complaintbox/
+│   ├── takecare/
+│   └── villa/
+│
+├── screenshots/
+│   ├── mediplus/
+│   ├── project4/
+│   ├── complaintbox/
+│   ├── takecare/
+│   └── villa/
+│
+├── .gitignore
+└── README.md
