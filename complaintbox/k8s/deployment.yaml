@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: complaintbox-deployment
+  labels:
+    app: complaintbox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: complaintbox
+  template:
+    metadata:
+      labels:
+        app: complaintbox
+    spec:
+      containers:
+      - name: complaintbox
+        image: aaronsbinu/complaintbox:latest
+        ports:
+        - containerPort: 8000

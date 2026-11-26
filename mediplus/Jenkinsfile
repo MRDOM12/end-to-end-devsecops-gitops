@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "mediplus"
+        DOCKER_IMAGE = "aaronsbinu/mediplus"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('SAST - Semgrep') {
+            steps {
+                sh 'semgrep scan --config=p/python --config=p/django .'
+            }
+        }
+
+        stage('Dependency & Secret Scan - Trivy') {
+            steps {
+                sh 'docker run --rm -v "$WORKSPACE:/project" aquasec/trivy:latest fs --scanners vuln,secret /project'
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker build -t "$DOCKER_IMAGE:$BUILD_NUMBER" -t "$DOCKER_IMAGE:latest" .
+                        docker push "$DOCKER_IMAGE:$BUILD_NUMBER"
+                        docker push "$DOCKER_IMAGE:latest"
+                    '''
+                }
+            }
+        }
+    }
+}

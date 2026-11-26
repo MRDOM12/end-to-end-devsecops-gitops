@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mediplus-deployment
+  labels:
+    app: mediplus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mediplus
+  template:
+    metadata:
+      labels:
+        app: mediplus
+    spec:
+      containers:
+      - name: mediplus
+        image: aaronsbinu/mediplus:latest
+        ports:
+        - containerPort: 8000

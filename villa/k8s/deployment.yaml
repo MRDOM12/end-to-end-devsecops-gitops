@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: villa-deployment
+  labels:
+    app: villa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: villa
+  template:
+    metadata:
+      labels:
+        app: villa
+    spec:
+      containers:
+      - name: villa
+        image: aaronsbinu/villa:latest
+        ports:
+        - containerPort: 8000

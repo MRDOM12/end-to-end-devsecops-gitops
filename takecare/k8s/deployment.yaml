@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: takecare-deployment
+  labels:
+    app: takecare
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: takecare
+  template:
+    metadata:
+      labels:
+        app: takecare
+    spec:
+      containers:
+      - name: takecare
+        image: aaronsbinu/takecare:latest
+        ports:
+        - containerPort: 8000

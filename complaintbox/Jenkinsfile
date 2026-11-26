@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    environment {
+        APP_NAME = "complaintbox"
+        DOCKER_IMAGE = "aaronsbinu/complaintbox"
+    }
+    stages {
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+        stage('SAST - Semgrep') {
+            steps { sh 'semgrep scan --config=p/python --config=p/django .' }
+        }
+        stage('Dependency & Secret Scan - Trivy') {
+            steps { sh 'docker run --rm --volumes-from jenkins ghcr.io/aquasecurity/trivy:latest fs --scanners vuln,secret ${WORKSPACE}' }
+        }
+        stage('Docker Build & Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} -t ${DOCKER_IMAGE}:latest .
+                        docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        docker push ${DOCKER_IMAGE}:latest
+                    '''
+                }
+            }
+        }
+    }
+}
